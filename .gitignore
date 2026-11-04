@@ -1,0 +1,44 @@
+# Divers / OS
+.DS_Store
+Thumbs.db
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Eclipse
+.metadata/
+.project
+.classpath
+.settings/
+bin/
+
+# VS Code
+.vscode/
+
+# Java / Maven
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node / Frontend (autoecole-web)
+node_modules/
+dist/
+coverage/
+.vite/
+
+# Environnement & secrets
+.env
+.env.*
+*.pem
+*.p12
+
+# Docker
+docker/volumes/
+
+# Spring Boot
+!*.original
+*.original
