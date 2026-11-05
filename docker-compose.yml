@@ -1,0 +1,53 @@
+name: auto-ecole
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: autoecole
+      POSTGRES_USER: autoecole
+      POSTGRES_PASSWORD: autoecole
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autoecole -d autoecole"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./autoecole-api
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: autoecole
+      POSTGRES_USER: autoecole
+      POSTGRES_PASSWORD: autoecole
+      SPRING_PROFILES_ACTIVE: docker
+      # En prod : définir JWT_SECRET dans l'environnement du serveur
+      JWT_SECRET: ${JWT_SECRET:auto-ecole-dev-secret-key-please-change-me-0123456789-abcdef}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Documents élèves (doc §6 : MinIO). Lancé avec : docker compose --profile files up
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    profiles: ["files"]
+
+volumes:
+  db-data:
+  minio-data:

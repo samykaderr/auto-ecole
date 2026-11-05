@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: autoecole-api
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:autoecole}
+    username: ${POSTGRES_USER:autoecole}
+    password: ${POSTGRES_PASSWORD:autoecole}
+  jpa:
+    # Le schéma appartient à Flyway (doc §6) : Hibernate ne recrée rien, il vérifie seulement
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    locations: classpath:db/migration
+  profiles:
+    default: dev
+
+server:
+  error:
+    # Format RFC 7807 (Problem Details), doc §8
+    include-message: always
+
+app:
+  jwt:
+    # HS256 : 32+ octets obligatoires. En prod, passer JWT_SECRET en variable d'environnement.
+    secret: ${JWT_SECRET:auto-ecole-dev-secret-key-please-change-me-0123456789-abcdef}
+    access-token-ttl: 15m
+    refresh-token-ttl: 30d
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+  demo:
+    owner-email: ${DEMO_OWNER_EMAIL:admin@autoecole.dev}
+    owner-password: ${DEMO_OWNER_PASSWORD:owner1234}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: info
